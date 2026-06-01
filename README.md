@@ -20,7 +20,7 @@ Built for [Payload 3.x](https://payloadcms.com) and Next.js.
 pnpm add payload-plugin-android-upload
 ```
 
-Peer dependency: `payload ^3.84.1`
+Peer dependencies: `payload ^3.84.1`, `@payloadcms/ui ^3.84.1`, `react`, and `react-dom`
 
 ## Quick start
 
@@ -301,6 +301,52 @@ The dev harness includes:
 - All plugin endpoints require `req.user`; unauthenticated requests return `401`
 - Local API calls use `overrideAccess: false` so collection access rules apply
 - Set `serverURL` in Payload config in production so client setup URLs are absolute and correct
+
+## Releasing
+
+Versioning, git tags, GitHub releases, and npm publishes are handled automatically when work merges to `main`.
+
+### Day-to-day workflow
+
+1. Commit on `dev` using [Conventional Commits](https://www.conventionalcommits.org/)
+2. Open a PR from `dev` → `main`
+3. Merge the PR
+4. GitHub Actions runs **semantic-release**, which:
+   - reads commits since the last tag
+   - bumps `package.json` (patch / minor / major)
+   - updates `CHANGELOG.md`
+   - creates a git tag (e.g. `v1.1.0`)
+   - opens a GitHub Release
+   - publishes to npm
+
+After a release, merge `main` back into `dev` so both branches stay in sync on version and changelog.
+
+### Commit message → version bump
+
+| Commit prefix | Example | Version bump |
+|---------------|---------|--------------|
+| `fix:` | `fix: dedupe files from multipart request` | patch (`1.0.0` → `1.0.1`) |
+| `feat:` | `feat: add iOS share target support` | minor (`1.0.0` → `1.1.0`) |
+| `feat!:` or `BREAKING CHANGE:` in body | `feat!: rename config option` | major (`1.0.0` → `2.0.0`) |
+| `docs:`, `chore:`, `test:`, etc. | `docs: update README` | no release |
+
+PR titles are checked in CI; squash-merge PRs using a conventional title (e.g. `feat: add collection picker`) so the commit on `main` is parseable.
+
+### One-time setup
+
+1. **GitHub secret** — add `NPM_TOKEN` in the repo settings (npm access token with publish rights). `GITHUB_TOKEN` is provided automatically.
+2. **First release tag** — before relying on automation, tag the current `main` commit if `1.0.0` is already released (or about to be released manually):
+
+   ```bash
+   git checkout main
+   git pull
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+
+   semantic-release uses git tags (not `package.json`) as the source of truth for “what’s already released”. Without a tag, the first automated release may calculate the wrong baseline.
+
+3. **Default branch** — set GitHub’s default branch to `main` so release PRs and tags land on the release branch.
 
 ## License
 
