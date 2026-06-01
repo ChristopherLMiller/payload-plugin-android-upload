@@ -1,6 +1,6 @@
 {
   "name": "payload-plugin-android-upload",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Payload CMS plugin for Android share-target media uploads with a permission-aware API and share UI",
   "license": "MIT",
   "author": "Christopher Miller <chris@itsmillertime.dev>",
