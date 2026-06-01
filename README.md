@@ -313,11 +313,11 @@ Versioning, git tags, GitHub releases, and npm publishes are handled automatical
 3. Merge the PR
 4. GitHub Actions runs **semantic-release**, which:
    - reads commits since the last tag
-   - bumps `package.json` (patch / minor / major)
+   - bumps `package.json` and commits it to `main` (patch / minor / major)
    - updates `CHANGELOG.md`
-   - creates a git tag (e.g. `v1.1.0`)
-   - opens a GitHub Release
+   - creates a **GitHub Release**
    - publishes to npm
+   - creates a git tag (e.g. `v1.1.0`)
 
 After a release, merge `main` back into `dev` so both branches stay in sync on version and changelog.
 
@@ -334,7 +334,13 @@ PR titles are checked in CI; squash-merge PRs using a conventional title (e.g. `
 
 ### One-time setup
 
-1. **GitHub secret** — add `NPM_TOKEN` in the repo settings (npm access token with publish rights). `GITHUB_TOKEN` is provided automatically.
+1. **GitHub secret `NPM_TOKEN`** — create a **Granular Access Token** on [npmjs.com](https://www.npmjs.com) → Access Tokens:
+   - Permissions: **Read and write** for your package (or all packages)
+   - Enable **Bypass two-factor authentication for automation** (required for CI; otherwise publish fails with `EOTP`)
+   - Add the token as `NPM_TOKEN` in GitHub → Settings → Secrets and variables → Actions
+
+   `GITHUB_TOKEN` is provided automatically for GitHub Releases.
+
 2. **First release tag** — before relying on automation, tag the current `main` commit if `1.0.0` is already released (or about to be released manually):
 
    ```bash
@@ -347,6 +353,13 @@ PR titles are checked in CI; squash-merge PRs using a conventional title (e.g. `
    semantic-release uses git tags (not `package.json`) as the source of truth for “what’s already released”. Without a tag, the first automated release may calculate the wrong baseline.
 
 3. **Default branch** — set GitHub’s default branch to `main` so release PRs and tags land on the release branch.
+
+### If a release workflow fails mid-way
+
+semantic-release runs **GitHub Release before npm publish**. If npm fails (e.g. invalid token), you may see a git tag and an updated `package.json` on `main` without a GitHub Release or npm package. Fix `NPM_TOKEN`, then either:
+
+- Re-run the **Release** workflow (Actions → Release → Run workflow), or
+- Manually publish from `main`: `pnpm build && npm publish --access public`
 
 ## License
 
