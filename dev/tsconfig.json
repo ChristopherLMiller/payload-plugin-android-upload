@@ -1,0 +1,41 @@
+{
+  "extends": "../tsconfig.json",
+  "exclude": [],
+  "include": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.mjs",
+    "**/*.cjs",
+    "**/*.ts",
+    "**/*.tsx",
+    "../src/**/*.ts",
+    "../src/**/*.tsx",
+    "next.config.mjs",
+    ".next/types/**/*.ts"
+  ],
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@payload-config": [
+        "./payload.config.ts"
+      ],
+      "payload-plugin-android-upload": [
+        "../src/index.ts"
+      ],
+      "payload-plugin-android-upload/client": [
+        "../src/exports/client.ts"
+      ],
+      "payload-plugin-android-upload/rsc": [
+        "../src/exports/rsc.ts"
+      ],
+      "payload-plugin-android-upload/share": [
+        "../src/exports/share.ts"
+      ],
+      "payload-plugin-android-upload/files": [
+        "../src/exports/files.ts"
+      ]
+    },
+    "noEmit": true,
+    "emitDeclarationOnly": false,
+  }
+}
